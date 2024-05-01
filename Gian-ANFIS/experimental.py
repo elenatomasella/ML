@@ -119,6 +119,18 @@ def test_anfis(model, data, show_plots=False):
     if show_plots:
         plotResults(y_actual, y_pred)
 
+        
+def classification_predictions(model, loader):
+    model.eval()  # Set the model to evaluation mode
+    predictions = []
+    with torch.no_grad():  # No need to track gradients
+        for x in loader:
+            logits = model(x)
+            y_probs = torch.softmax(logits, dim=1)
+            y_pred = torch.argmax(y_probs, dim=1) - 1  # I subtract 1 to labels to match my notation [-1, 0, 1]
+            predictions.extend(y_pred.tolist())
+    return predictions        
+        
 def test_anfis_classifier(model, data, show_plots=False):
     '''
         Addition by Gian to work with AnfisNetClassifier
@@ -197,15 +209,16 @@ def train_anfis_classifier_with(model, data, optimizer, epochs=500, show_plots=F
             optimizer.zero_grad()  # Zero the parameter gradients
             # print("Logits shape:", logits.shape)  # Should be [64, num_classes]
             loss = criterion(logits, y_actual)  # Compute loss
-            print(f"Loss:{loss}")
+            # print('Loss={:.3f}'.format(loss))
             if torch.isnan(loss).any() or torch.isinf(loss).any():
                 print("NaN or Inf in loss detected")
                 break
             loss.backward()  # Backpropagation
+            '''
             for name, param in model.named_parameters():
                 if param.grad is not None:
                     print(f"{name} gradient: {param.grad.norm()}")
-                
+            '''    
             optimizer.step()  # Optimize
             running_loss += loss.item() * x.size(0)  # Multiply by batch size
         epoch_loss = running_loss / len(data.dataset)  # Average loss for the epoch
@@ -218,6 +231,7 @@ def train_anfis_classifier_with(model, data, optimizer, epochs=500, show_plots=F
     # End of training
     if show_plots:
         plotErrors(errors)  # Function to plot the training error
+        
 
 def train_anfis(model, data, epochs=500, show_plots=False):
     '''

@@ -182,8 +182,10 @@ class ConsequentLayer(torch.nn.Module):
     def __init__(self, d_in, d_rule, d_out):
         super(ConsequentLayer, self).__init__()
         c_shape = torch.Size([d_rule, d_out, d_in+1])
+        
+        # coefficient (consequent parameters) initialization
         #self._coeff = torch.zeros(c_shape, dtype=dtype, requires_grad=True)
-        self._coeff = torch.randn(c_shape, dtype=dtype, requires_grad=True)*0.01
+        self._coeff = torch.randn(c_shape, dtype=dtype, requires_grad=True)*0.1
         
     @property
     def coeff(self):
@@ -477,10 +479,9 @@ class AnfisNetClassifier(torch.nn.Module):
         return logits
 
         # In usage, apply softmax to convert to probabilities:
-        # y_probs = F.softmax(tsk_sum, dim=1)
+        # y_probs = F.softmax(tsk.sum, dim=1)
         # To then get the predicted class labels:
         # y_pred = torch.argmax(self.y_probs, dim=1)
-        
 
 # These hooks are handy for debugging:
 

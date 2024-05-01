@@ -182,8 +182,9 @@ class ConsequentLayer(torch.nn.Module):
     def __init__(self, d_in, d_rule, d_out):
         super(ConsequentLayer, self).__init__()
         c_shape = torch.Size([d_rule, d_out, d_in+1])
-        self._coeff = torch.zeros(c_shape, dtype=dtype, requires_grad=True)
-
+        #self._coeff = torch.zeros(c_shape, dtype=dtype, requires_grad=True)
+        self._coeff = torch.randn(c_shape, dtype=dtype, requires_grad=True)*0.01
+        
     @property
     def coeff(self):
         '''
@@ -265,6 +266,18 @@ class PlainConsequentLayer(ConsequentLayer):
             coeff.shape: n_rules * n_out * (n_in+1)
         '''
         return self.coefficients
+
+    '''
+    @coeff.setter
+    Added by Gian since AnfisNetClassifier uses PlainConseuqntLayer, 
+    and it is useful to initialize its values
+    '''
+    @coeff.setter
+    def coeff(self, new_coeff):
+        assert new_coeff.shape == self.coeff.shape, \
+            'Coeff shape should be {}, but is actually {}'\
+            .format(self.coeff.shape, new_coeff.shape)
+        self._coeff = new_coeff
 
     def fit_coeff(self, x, weights, y_actual):
         '''

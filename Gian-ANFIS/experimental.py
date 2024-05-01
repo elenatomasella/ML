@@ -193,10 +193,19 @@ def train_anfis_classifier_with(model, data, optimizer, epochs=500, show_plots=F
         running_loss = 0.0
         for x, y_actual in data:
             logits = model(x)  # Forward pass, model outputs logits for CrossEntropyLoss
+            assert not torch.isnan(logits).any(), "NaN found in logits"
             optimizer.zero_grad()  # Zero the parameter gradients
             # print("Logits shape:", logits.shape)  # Should be [64, num_classes]
             loss = criterion(logits, y_actual)  # Compute loss
+            print(f"Loss:{loss}")
+            if torch.isnan(loss).any() or torch.isinf(loss).any():
+                print("NaN or Inf in loss detected")
+                break
             loss.backward()  # Backpropagation
+            for name, param in model.named_parameters():
+                if param.grad is not None:
+                    print(f"{name} gradient: {param.grad.norm()}")
+                
             optimizer.step()  # Optimize
             running_loss += loss.item() * x.size(0)  # Multiply by batch size
         epoch_loss = running_loss / len(data.dataset)  # Average loss for the epoch

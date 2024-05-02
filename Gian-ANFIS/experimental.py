@@ -58,11 +58,19 @@ def plotErrors(errors):
     '''
         Plot the given list of error rates against no. of epochs
     '''
-    plt.plot(range(len(errors)), errors, '-ro', label='errors')
-    plt.ylabel('Percentage error')
-    plt.xlabel('Epoch')
-    plt.show()
+    plt.figure(figsize=(8, 4.5))
 
+    plt.rcParams['font.sans-serif'] = 'Arial'
+    
+    plt.plot(range(len(errors)), errors, '-ro', label='errors')
+    plt.ylabel('Loss Function', fontsize=12, color='black')
+    plt.xlabel('Epoch', fontsize=12, color='black')
+    
+    plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
+    
+    plt.tight_layout()
+    plt.savefig('errors_plot.png', transparent=True)
+    plt.show()
 
 def plotResults(y_actual, y_predicted):
     '''

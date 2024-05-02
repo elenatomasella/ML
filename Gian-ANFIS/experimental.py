@@ -90,11 +90,20 @@ def _plot_mfs(var_name, fv, x):
     '''
     # Sort x so we only plot each x-value once:
     xsort, _ = x.sort()
+    
+    plt.figure(figsize=(8, 4.5))
+
+    plt.rcParams['font.sans-serif'] = 'Arial'
+    
     for mfname, yvals in fv.fuzzify(xsort):
         plt.plot(xsort.tolist(), yvals.tolist(), label=mfname)
-    plt.xlabel('Values for variable {} ({} MFs)'.format(var_name, fv.num_mfs))
-    plt.ylabel('Membership')
-    plt.legend(bbox_to_anchor=(1., 0.95))
+        
+    
+    plt.xlabel('Scaled Values for variable {}'.format(var_name))
+    plt.ylabel('Membership Values')
+    plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
+    #plt.legend(bbox_to_anchor=(1., 0.95))
+    plt.savefig('{}_memberships.png'.format(var_name), transparent=True)
     plt.show()
 
 
@@ -173,8 +182,19 @@ def train_anfis_with(model, data, optimizer, criterion,
             loss = criterion(y_pred, y_actual)
             # Zero gradients, perform a backward pass, and update the weights.
             optimizer.zero_grad()
-            loss.backward()
+            loss.backward(retain_graph=True)
             optimizer.step()
+            
+            #torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
+            
+            if torch.isnan(loss).any() or torch.isinf(loss).any():
+                print("NaN or Inf in loss detected")
+                break
+            
+            #for name, param in model.named_parameters():
+            #    if param.grad is not None:
+            #        print(f"{name} gradient: {param.grad.norm()}")
+            
         # Epoch ending, so now fit the coefficients based on all data:
         x, y_actual = data.dataset.tensors
         with torch.no_grad():
@@ -222,6 +242,7 @@ def train_anfis_classifier_with(model, data, optimizer, epochs=500, show_plots=F
                 print("NaN or Inf in loss detected")
                 break
             loss.backward()  # Backpropagation
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
             '''
             for name, param in model.named_parameters():
                 if param.grad is not None:

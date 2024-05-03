@@ -182,9 +182,8 @@ class ConsequentLayer(torch.nn.Module):
     def __init__(self, d_in, d_rule, d_out):
         super(ConsequentLayer, self).__init__()
         c_shape = torch.Size([d_rule, d_out, d_in+1])
-        
         # coefficient (consequent parameters) initialization
-        #self._coeff = torch.zeros(c_shape, dtype=dtype, requires_grad=True)
+        #self._coeff = torch.zeros(c_shape, dtype=dtype, requires_grad=True)        
         self._coeff = torch.randn(c_shape, dtype=dtype, requires_grad=True)*0.1
         
     @property
@@ -226,7 +225,7 @@ class ConsequentLayer(torch.nn.Module):
         y_actual_2d = y_actual.view(y_actual.shape[0], -1)
         # Use gels to do LSE, then pick out the solution rows:
         try:
-             coeff_2d = torch.lstsq(weighted_x_2d, y_actual_2d).solution
+            coeff_2d, _ = torch.lstsq(y_actual_2d, weighted_x_2d)
         except RuntimeError as e:
             print('Internal error in gels', e)
             print('Weights are:', weighted_x)
@@ -324,6 +323,7 @@ class AnfisNet(torch.nn.Module):
         self.num_in = len(invardefs)
         self.num_rules = np.prod([len(mfs) for _, mfs in invardefs])
         if self.hybrid:
+            # print("Initializing ConsequentLayer with num_in:", self.num_in, "num_rules:", self.num_rules, "num_out:", self.num_out)
             cl = ConsequentLayer(self.num_in, self.num_rules, self.num_out)
         else:
             cl = PlainConsequentLayer(self.num_in, self.num_rules, self.num_out)

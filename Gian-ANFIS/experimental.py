@@ -182,7 +182,7 @@ def train_anfis_with(model, data, optimizer, criterion,
             loss = criterion(y_pred, y_actual)
             # Zero gradients, perform a backward pass, and update the weights.
             optimizer.zero_grad()
-            loss.backward(retain_graph=True)
+            loss.backward()
             optimizer.step()
             
             #torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)

@@ -1,6 +1,6 @@
 #Master's Degree in Data Science and Management
 #Course: Machine Learning
-#Students: Gian Lorenzo Marchioni () - David Paquette () - Elena Tomasella (781321)
+#Students: Gian Lorenzo Marchioni (788811) - David Paquette () - Elena Tomasella (781321)
 
 # import libraries
 import numpy as np

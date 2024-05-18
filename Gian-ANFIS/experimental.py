@@ -183,6 +183,7 @@ def train_anfis_with(model, data, optimizer, criterion,
             # Zero gradients, perform a backward pass, and update the weights.
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
             optimizer.step()
             
             #torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
@@ -217,7 +218,7 @@ def train_anfis_with(model, data, optimizer, criterion,
 def train_anfis_classifier_with(model, data, optimizer, epochs=500, show_plots=False):
     '''
         Train the classifier ANFIS model using the given (x,y) data.
-        Modified version by Gian in order to use misclassification error, or rather 
+        Modified version by Gian in order to use misclassification error, or 
         torch.nn.CrossEntropyLoss()
         The input for crossentropy should be logits for each class outputted by model.
         Target should be class labels in the range [0,1,...,num_classes-1].
@@ -258,7 +259,7 @@ def train_anfis_classifier_with(model, data, optimizer, epochs=500, show_plots=F
             print('epoch {:4d}: Loss={:.5f}'.format(t, epoch_loss))
         
     # End of training
-    if show_plots:
+    if show_plots: 
         plotErrors(errors)  # Function to plot the training error
         
 

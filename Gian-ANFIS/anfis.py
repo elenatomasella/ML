@@ -268,18 +268,6 @@ class PlainConsequentLayer(ConsequentLayer):
         '''
         return self.coefficients
 
-    '''
-    @coeff.setter
-    Added by Gian since AnfisNetClassifier uses PlainConseuqntLayer, 
-    and it is useful to initialize its values
-    '''
-    @coeff.setter
-    def coeff(self, new_coeff):
-        assert new_coeff.shape == self.coeff.shape, \
-            'Coeff shape should be {}, but is actually {}'\
-            .format(self.coeff.shape, new_coeff.shape)
-        self._coeff = new_coeff
-
     def fit_coeff(self, x, weights, y_actual):
         '''
         '''
